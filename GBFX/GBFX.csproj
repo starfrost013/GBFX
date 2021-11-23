@@ -1,0 +1,91 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Configurations>Debug;Release;Debug.Win64;Release.Win64</Configurations>
+    <AssemblyVersion>1.0.22.21327</AssemblyVersion>
+    <FileVersion>1.0.22.21327</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\01-special.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\02-interrupts.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\03-op sp,hl.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\04-op r,imm.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\05-op rp.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\06-ld r,r.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\07-jr,jp,call,ret,rst.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\08-misc instrs.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\09-op r,r.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\10-bit ops.gb" />
+    <None Remove="Content\Tests\blargg\cpu_instrs\individual\11-op a,%28hl%29.gb" />
+    <None Remove="Content\Tests\simple\inc_bc.bin" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\01-special.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\02-interrupts.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\03-op sp,hl.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\04-op r,imm.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\05-op rp.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\06-ld r,r.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\07-jr,jp,call,ret,rst.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\08-misc instrs.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\09-op r,r.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\10-bit ops.gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\blargg\cpu_instrs\individual\11-op a,(hl).gb">
+      <CopyToOutputDirectory>5</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tests\simple\inc_bc.bin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GBFX.Core\GBFX.Core.csproj" />
+    <ProjectReference Include="..\Lightning.Core.NativeInterop\Lightning.Core.NativeInterop.csproj" />
+    <ProjectReference Include="..\Lightning.Utilities\Lightning.Utilities.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;WINDOWS</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug.Win64|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;WINDOWS,X64</DefineConstants>
+    <Optimize>false</Optimize>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release.Win64|AnyCPU'">
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;WINDOWS,X64</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+
+  </PropertyGroup>
+</Project>
