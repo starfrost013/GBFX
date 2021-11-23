@@ -91,7 +91,7 @@ namespace GBFX.Core
 
             byte Opcode = Memory.Read(PC);
 
-            Logging.Log($"Executing opcode 0x{Opcode.ToString("X2")} at {PC.ToString("X2")}");
+            Logging.Log($"Executing opcode 0x{Opcode.ToString("X2")} at {PC.ToString("X2")}", ClassName);
 
             switch (Opcode)
             {
@@ -531,6 +531,30 @@ namespace GBFX.Core
                 case 0xB7:
                     Or(A);
                     break;
+                case 0xC1: // pop bc   16 cycles   ----
+                    BC = Pop();
+                    break; 
+                case 0xC5: // push bc   16 cycles   ----
+                    Push(BC);
+                    break;
+                case 0xD1: // pop de   16 cycles   ----
+                    DE = Pop(); 
+                    break;
+                case 0xD5: // push de   16 cycles   ----
+                    Push(DE);
+                    break;
+                case 0xE1: // pop hl   16 cycles   ----
+                    HL = Pop();
+                    break; 
+                case 0xE5: // push hl   16 cycles   ----
+                    Push(HL);
+                    break;
+                case 0xF1: // pop af   16 cycles   ----
+                    AF = Pop();
+                    break;
+                case 0xF5: // push af   16 cycles   ----
+                    Push(AF);
+                    break;
                 default: // invalid opcodes - implement glitch opcodes one day?
                     ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", $"Attempted to execute invalid opcode 0x{Opcode.ToString("X2")} at 0x{PC.ToString("X2")}!\nMaybe implement these in the future.");
                     break;
@@ -710,6 +734,20 @@ namespace GBFX.Core
             FlagN = false;
 
             A = (byte)Result; 
+        }
+
+        public void Push(ushort B) // Push address from stack (SP - 2)
+        {
+            SP -= 2;
+            Memory.Write(SP, B);
+        }
+
+        public ushort Pop() // Pop address from stack (SP + 2) 
+        {
+            ushort Final = Memory.Read(SP);
+            SP += 2;
+
+            return Final; 
         }
 
         #endregion

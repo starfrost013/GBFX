@@ -23,19 +23,10 @@ namespace GBFX.Core
         public int Cycles { get; set; }
 
         /// <summary>
-        /// The major version of the DMG CPU core.
+        /// The version of the DMG CPU core.
         /// </summary>
-        public const int DMGCPU_CORE_VERSION_MAJOR = 0;
+        public const int DMGCPU_CORE_VERSION = 6;
 
-        /// <summary>
-        /// The minor version of the DMG CPU core.
-        /// </summary>
-        public const int DMGCPU_CORE_VERSION_MINOR = 4;
-
-        /// <summary>
-        /// The revision version of the DMG CPU core.
-        /// </summary>
-        public const int DMGCPU_CORE_VERSION_REVISION = 0;
 
         public static string ClassName => "CPU Core";
         #endregion

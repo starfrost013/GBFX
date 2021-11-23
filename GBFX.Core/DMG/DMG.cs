@@ -22,10 +22,12 @@ namespace GBFX.Core
         /// </summary>
         public DMGCPU CPU { get; set; }
 
+        public const string ClassName = "DMG"; 
+
         public DMG()
         {
             ErrorManager.Init();
-            Logging.Log("DMG Core Init");
+            Logging.Log($"DMG Core Init, core version {DMGCPU.DMGCPU_CORE_VERSION}...", ClassName);
             CPU = new DMGCPU();
         }
 
