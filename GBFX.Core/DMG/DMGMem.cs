@@ -196,6 +196,20 @@ namespace GBFX.Core
             }
         }
 
+        public void Write(ushort Position, ushort Value)
+        {
+            // not the most intelligent way to write a 16bit word
+            // x86 and DMG/lr35902 use same endianness
+            // should work
+
+            byte[] Bytes = BitConverter.GetBytes(Value);
+
+            foreach (byte Byte in Bytes)
+            {
+                Write(Position, Byte); 
+            }
+
+        }
 
         #endregion
 
