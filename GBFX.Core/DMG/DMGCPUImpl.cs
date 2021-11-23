@@ -98,6 +98,10 @@ namespace GBFX.Core
                 case 0x05: // dec b    05  4 cycles    z1h-
                     B = Dec(B);
                     break;
+                case 0x08: // load (a16),sp  20 cycles 
+                    Memory.Write(Memory.Read(PC), SP); // set stack pointer to memory at cur address??
+                    PC += 2;
+                    break; 
                 case 0x0A:
                     A = Memory.Read(BC);
                     break; 
@@ -537,21 +541,39 @@ namespace GBFX.Core
                     break;
                 case 0xC1: // pop bc   16 cycles   ----
                     BC = Pop();
+                    break;
+                case 0xC2:
+                    Jp(!FlagZ);
+                    break;
+                case 0xC3:
+                    Jp(true);
                     break; 
                 case 0xC5: // push bc   16 cycles   ----
                     Push(BC);
                     break;
+                case 0xCA:
+                    Jp(FlagZ);
+                    break;
                 case 0xD1: // pop de   16 cycles   ----
                     DE = Pop(); 
+                    break;
+                case 0xD2:
+                    Jp(!FlagC);
                     break;
                 case 0xD5: // push de   16 cycles   ----
                     Push(DE);
                     break;
+                case 0xDA:
+                    Jp(FlagC);
+                    break; 
                 case 0xE1: // pop hl   16 cycles   ----
                     HL = Pop();
                     break; 
                 case 0xE5: // push hl   16 cycles   ----
                     Push(HL);
+                    break;
+                case 0xE9:
+                    PC = HL; 
                     break;
                 case 0xF1: // pop af   16 cycles   ----
                     AF = Pop();
@@ -586,7 +608,7 @@ namespace GBFX.Core
             Logging.Log($"L=0x{L.ToString("X2")}, BC=0x{BC.ToString("X2")}", ClassName);
             Logging.Log($"DE=0x{DE.ToString("X2")}, HL=0x{HL.ToString("X2")}", ClassName);
             Logging.Log($"SP=0x{SP.ToString("X2")}", ClassName);
-            Logging.Log($"HALTed={Halted}, Cycles={Cycles}", ClassName);
+            Logging.Log($"HALTed={Halted}, STOPped={Stopped}, Cycles={Cycles}", ClassName);
             Logging.Log($"Flags: Z:{FlagZ}, N:{FlagN}, H:{FlagH}, C:{FlagC}", ClassName);
         }
 
@@ -757,6 +779,22 @@ namespace GBFX.Core
             return Final; 
         }
 
+        /// <summary>
+        /// Jumps.
+        /// </summary>
+        /// <param name="JpFlag">The condition that must be satisfied in order to jump.</param>
+        public void Jp(bool JpFlag)
+        {
+            if (JpFlag)
+            {
+                PC = Memory.Read(PC);
+                //todo: cycle counting
+            }
+            else
+            {
+                PC += 2; 
+            }
+        }
         #endregion
 
         #region Support
