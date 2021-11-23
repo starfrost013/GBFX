@@ -21,7 +21,7 @@ namespace GBFX.Core
         public void Boot()
         {
 
-            Logging.Log("CPU Power-on in progress...");
+            Logging.Log("CPU Power-on in progress...", ClassName);
 
             // The initial contents of WRAM, HRAM, and ExtRAM (if present)
             // are non-deterministic and highly dependent on model and even atmospheric conditions around the system.
@@ -33,41 +33,33 @@ namespace GBFX.Core
             // Fill WRAMDMG with garbage.
             for (int i = 0; i < Memory.WRAMDMG.Length; i++)
             {
-                byte Byte = Memory.WRAMDMG[i];
-
-                Byte = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
+                Memory.WRAMDMG[i] = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
             }
 
             // fill WRAM section 2 (DMG) / Bankable RAM (CGB) with garbage..
             for (int i = 0; i < Memory.WRAMCGB.Length; i++)
             {
-                byte Byte = Memory.WRAMCGB[i];
-
-                Byte = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
+                Memory.WRAMCGB[i]  = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
             }
 
             // fill HRAM with garbage..
             for (int i = 0; i < Memory.HRAM.Length; i++)
             {
-                byte Byte = Memory.HRAM[i];
-
-                Byte = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
+                Memory.HRAM[i] = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
             }
 
             // and finally fill EXTRAM with garbage!
             for (int i = 0; i < Memory.ExtRam.Length; i++)
             {
-                byte Byte = Memory.ExtRam[i];
-
-                Byte = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
+                Memory.ExtRam[i] = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
             }
 
 
-            Logging.Log("Loading Boot ROM...");
+            Logging.Log("Loading Boot ROM...", ClassName);
 
             Boot_LoadBootROM();
 
-            Logging.Log("Booting NOW!");
+            Logging.Log("Booting NOW!", ClassName);
         }
 
         private void Boot_LoadBootROM()
@@ -106,6 +98,9 @@ namespace GBFX.Core
                 case 0x05: // dec b    05  4 cycles    z1h-
                     B = Dec(B);
                     break;
+                case 0x0A:
+                    A = Memory.Read(BC);
+                    break; 
                 case 0x0B: // dec rr    x3  8 cycles    N/A
                     BC--;
                     break;
@@ -130,6 +125,9 @@ namespace GBFX.Core
                 case 0x18: // dec rr    x3  8 cycles    N/A
                     DE--;
                     break;
+                case 0x1A:
+                    A = Memory.Read(DE);
+                    break;
                 case 0x1C: // inc e    1C  4 cycles    z0h-
                     E = Inc(E);
                     break;
@@ -145,6 +143,9 @@ namespace GBFX.Core
                 case 0x25: // dec h    25  4 cycles    z1h-
                     H = Dec(H);
                     break;
+                case 0x2A:
+                    A = Memory.Read(HL++);
+                    break; 
                 case 0x2B: // dec rr    x3  8 cycles    N/A
                     HL--;
                     break;
@@ -164,6 +165,9 @@ namespace GBFX.Core
                 case 0x35: // dec (hl)    35  12 cycles    z0h-
                     byte AtHL2 = Memory.Read(HL);
                     Memory.Write(HL, AtHL2--);
+                    break;
+                case 0x3A:
+                    A = Memory.Read(HL--);
                     break;
                 case 0x3B: // dec rr    x3  8 cycles    N/A
                     SP--;
@@ -387,28 +391,28 @@ namespace GBFX.Core
                 case 0x87: // add a,a   4 cycles    z0hc
                     Add(A);
                     break;
-                case 0x88:
+                case 0x88: // adc a,b   4 cycles    z0hc
                     Adc(B);
                     break;
-                case 0x89:
+                case 0x89: // adc a,b   4 cycles    z0hc
                     Adc(C);
                     break;
-                case 0x8A:
+                case 0x8A: // adc a,d   4 cycles    z0hc
                     Adc(D);
                     break;
-                case 0x8B:
+                case 0x8B: // adc a,e   4 cycles    z0hc
                     Adc(E);
                     break;
-                case 0x8C:
+                case 0x8C: // adc a,h   4 cycles    z0hc
                     Adc(H);
                     break;
-                case 0x8D:
+                case 0x8D: // adc a,l   4 cycles    z0hc
                     Adc(L);
                     break;
-                case 0x8E:
+                case 0x8E: // adc a,(hl)   8 cycles    z0hc
                     Adc(Memory.Read(HL));
                     break;
-                case 0x8F:
+                case 0x8F: // adc a,a   4 cycles    z0hc
                     Adc(A);
                     break; 
                 case 0x90: // sub a,b  4 cycles    z1hc
@@ -429,107 +433,107 @@ namespace GBFX.Core
                 case 0x95: // sub a,l  4 cycles    z1hc
                     Sub(L);
                     break;
-                case 0x96: // sub a,(hl)  4 cycles    z1hc
+                case 0x96: // sub a,(hl)  8 cycles    z1hc
                     Sub(Memory.Read(HL));
                     break;
                 case 0x97: // sub a,a  4 cycles    z1hc
                     Sub(A);
                     break;
-                case 0x98:
+                case 0x98: // sbc a,b  8 cycles     z1hc
                     Sbc(B);
                     break;
-                case 0x99:
+                case 0x99: // sbc a,c  8 cycles     z1hc
                     Sbc(C);
                     break;
-                case 0x9A:
+                case 0x9A: // sbc a,d  8 cycles     z1hc
                     Sbc(D);
                     break;
-                case 0x9B:
+                case 0x9B: // sbc a,e  8 cycles     z1hc
                     Sbc(E);
                     break;
-                case 0x9C:
+                case 0x9C: // sbc a,h  8 cycles     z1hc
                     Sbc(H);
                     break;
-                case 0x9D:
+                case 0x9D: // sbc a,l  8 cycles     z1hc
                     Sbc(L);
                     break;
-                case 0x9E:
+                case 0x9E: // sbc a,(hl)  8 cycles     z1hc
                     Sbc(Memory.Read(HL));
                     break; 
-                case 0x9F:
+                case 0x9F: // sbc a,a  8 cycles     z1hc
                     Sbc(A);
                     break;
-                case 0xA0:
+                case 0xA0: // and b  8 cycles     z0hc
                     And(B);
                     break;
-                case 0xA1:
+                case 0xA1: // and c  8 cycles     z0hc
                     And(C);
                     break;
-                case 0xA2:
+                case 0xA2: // and d  8 cycles     z0hc
                     And(D);
                     break;
-                case 0xA3:
+                case 0xA3: // and e  8 cycles     z0hc
                     And(E);
                     break;
-                case 0xA4:
+                case 0xA4: // and h  8 cycles     z0hc
                     And(H);
                     break;
-                case 0xA5:
+                case 0xA5: // and l  8 cycles     z0hc
                     And(L);
                     break;
-                case 0xA6:
+                case 0xA6: // and (hl)  8 cycles     z0hc
                     And(Memory.Read(HL));
                     break;
-                case 0xA7:
+                case 0xA7: // and a   4 cycles     z0hc
                     And(A);
                     break;
-                case 0xA8:
+                case 0xA8: // xor b    4 cycles     z000
                     Xor(B);
                     break;
-                case 0xA9:
+                case 0xA9: // xor c    4 cycles     z000
                     Xor(C);
                     break;
-                case 0xAA:
+                case 0xAA: // xor d    4 cycles     z000
                     Xor(D);
                     break;
-                case 0xAB:
+                case 0xAB: // xor e    4 cycles     z000
                     Xor(E);
                     break;
-                case 0xAC:
+                case 0xAC: // xor h    4 cycles     z000
                     Xor(H);
                     break;
-                case 0xAD:
+                case 0xAD: // xor l    4 cycles     z000
                     Xor(L);
                     break;
                 case 0xAE:
-                    Xor(Memory.Read(HL));
+                    Xor(Memory.Read(HL)); // xor (hl)    8 cycles     z000
                     break;
-                case 0xAF:
+                case 0xAF: // xor a    4 cycles     z000
                     Xor(A);
                     break;
-                case 0xB0:
+                case 0xB0: // or b    4 cycles     z000
                     Or(B);
                     break;
-                case 0xB1:
+                case 0xB1: // or c    4 cycles     z000
                     Or(C);
                     break;
-                case 0xB2:
+                case 0xB2: // or d    4 cycles     z000
                     Or(D);
                     break;
-                case 0xB3:
+                case 0xB3: // or e    4 cycles     z000
                     Or(E);
                     break;
-                case 0xB4:
+                case 0xB4: // or h    4 cycles     z000
                     Or(H);
                     break;
-                case 0xB5:
+                case 0xB5: // or l    4 cycles     z000
                     Or(L);
                     break;
                 case 0xB6:
-                    Or(Memory.Read(HL));
+                    Or(Memory.Read(HL)); // or (hl)    8 cycles     z000
                     break;
                 case 0xB7:
-                    Or(A);
+                    Or(A); // or a    4 cycles     z000
                     break;
                 case 0xC1: // pop bc   16 cycles   ----
                     BC = Pop();
@@ -555,6 +559,9 @@ namespace GBFX.Core
                 case 0xF5: // push af   16 cycles   ----
                     Push(AF);
                     break;
+                case 0xF9: // ld sp,hl  4 cycles    ---- (16-bit)
+                    SP = HL; 
+                    break; 
                 default: // invalid opcodes - implement glitch opcodes one day?
                     ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", $"Attempted to execute invalid opcode 0x{Opcode.ToString("X2")} at 0x{PC.ToString("X2")}!\nMaybe implement these in the future.");
                     break;

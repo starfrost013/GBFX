@@ -33,6 +33,9 @@ namespace GBFX.Core
         /// </summary>
         public ushort RedirAmount { get; set; }
 
+        /// <summary>
+        /// Data in this mappable
+        /// </summary>
         public byte[] Data { get; set; }
 
         public ushort Length
