@@ -89,6 +89,9 @@ namespace GBFX.Core
             {
                 case 0x00: // nop (do nothing) 
                     break;
+                case 0x02:
+                    Memory.Write(BC, A); // POS=bc so no need to read
+                    break;
                 case 0x03: // inc rr    x3  8 cycles    N/A
                     BC++;
                     break;
@@ -117,6 +120,9 @@ namespace GBFX.Core
                 case 0x10: // STOP
                     ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", "https://pbs.twimg.com/media/E5jlgW9XIAEKj0t.png:large - not even trying this one");
                     break;
+                case 0x12:
+                    Memory.Write(DE, A);
+                    break;
                 case 0x13: // inc rr    x3  8 cycles    N/A
                     DE++;
                     break;
@@ -137,6 +143,9 @@ namespace GBFX.Core
                     break;
                 case 0x1D: // dec e    1D  4 cycles    z1h-
                     E = Dec(E);
+                    break;
+                case 0x22:
+                    Memory.Write(HL++, A);
                     break;
                 case 0x23: // inc rr    x3  8 cycles    N/A
                     HL++;
@@ -159,6 +168,9 @@ namespace GBFX.Core
                 case 0x2D: // dec l    2D  4 cycles    z1h-
                     L = Dec(L);
                     break;
+                case 0x32:
+                    Memory.Write(HL--, A);
+                    break; 
                 case 0x33: // inc rr    x3  8 cycles    N/A
                     SP++;
                     break;
