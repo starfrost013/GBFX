@@ -388,7 +388,29 @@ namespace GBFX.Core
                     Add(A);
                     break;
                 case 0x88:
-                    
+                    Adc(B);
+                    break;
+                case 0x89:
+                    Adc(C);
+                    break;
+                case 0x8A:
+                    Adc(D);
+                    break;
+                case 0x8B:
+                    Adc(E);
+                    break;
+                case 0x8C:
+                    Adc(H);
+                    break;
+                case 0x8D:
+                    Adc(L);
+                    break;
+                case 0x8E:
+                    Adc(Memory.Read(HL));
+                    break;
+                case 0x8F:
+                    Adc(A);
+                    break; 
                 case 0x90: // sub a,b  4 cycles    z1hc
                     Sub(B);
                     break;
@@ -412,6 +434,102 @@ namespace GBFX.Core
                     break;
                 case 0x97: // sub a,a  4 cycles    z1hc
                     Sub(A);
+                    break;
+                case 0x98:
+                    Sbc(B);
+                    break;
+                case 0x99:
+                    Sbc(C);
+                    break;
+                case 0x9A:
+                    Sbc(D);
+                    break;
+                case 0x9B:
+                    Sbc(E);
+                    break;
+                case 0x9C:
+                    Sbc(H);
+                    break;
+                case 0x9D:
+                    Sbc(L);
+                    break;
+                case 0x9E:
+                    Sbc(Memory.Read(HL));
+                    break; 
+                case 0x9F:
+                    Sbc(A);
+                    break;
+                case 0xA0:
+                    And(B);
+                    break;
+                case 0xA1:
+                    And(C);
+                    break;
+                case 0xA2:
+                    And(D);
+                    break;
+                case 0xA3:
+                    And(E);
+                    break;
+                case 0xA4:
+                    And(H);
+                    break;
+                case 0xA5:
+                    And(L);
+                    break;
+                case 0xA6:
+                    And(Memory.Read(HL));
+                    break;
+                case 0xA7:
+                    And(A);
+                    break;
+                case 0xA8:
+                    Xor(B);
+                    break;
+                case 0xA9:
+                    Xor(C);
+                    break;
+                case 0xAA:
+                    Xor(D);
+                    break;
+                case 0xAB:
+                    Xor(E);
+                    break;
+                case 0xAC:
+                    Xor(H);
+                    break;
+                case 0xAD:
+                    Xor(L);
+                    break;
+                case 0xAE:
+                    Xor(Memory.Read(HL));
+                    break;
+                case 0xAF:
+                    Xor(A);
+                    break;
+                case 0xB0:
+                    Or(B);
+                    break;
+                case 0xB1:
+                    Or(C);
+                    break;
+                case 0xB2:
+                    Or(D);
+                    break;
+                case 0xB3:
+                    Or(E);
+                    break;
+                case 0xB4:
+                    Or(H);
+                    break;
+                case 0xB5:
+                    Or(L);
+                    break;
+                case 0xB6:
+                    Or(Memory.Read(HL));
+                    break;
+                case 0xB7:
+                    Or(A);
                     break;
                 default: // invalid opcodes - implement glitch opcodes one day?
                     ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", $"Attempted to execute invalid opcode 0x{Opcode.ToString("X2")} at 0x{PC.ToString("X2")}!\nMaybe implement these in the future.");
@@ -448,9 +566,9 @@ namespace GBFX.Core
 
         public byte Inc(byte B) // Z0H-, 8-bit increment (8-bit registers ONLY!)
         {
-            ushort Result = (byte)(B + 1);
+            int Result = (byte)(B + 1);
 
-            SetZ(Result); // set the zero flag if the result is zero
+            SetZ((byte)Result); // set the zero flag if the result is zero
             
             FlagN = false; // N is false
 
@@ -461,9 +579,9 @@ namespace GBFX.Core
 
         public byte Dec(byte B) // Z0H-, 8-bit decreement (8-bit registers ONLY!)
         {
-            ushort Result = (byte)(B - 1);
+            int Result = (byte)(B - 1);
 
-            SetZ(Result); // set the zero flag if the result is zero
+            SetZ((byte)Result); // set the zero flag if the result is zero
 
             FlagN = true; // N is false
 
@@ -472,21 +590,21 @@ namespace GBFX.Core
             return (byte)Result;
         }
 
-        public void Add(ushort B)  // Z0HC, 8-bit add 
+        public void Add(byte B)  // Z0HC, 8-bit add 
         {
-            ushort Result = (ushort)(A + B); // (the game boy only supports adding or subtracting from the A register)
-            SetZ(Result);
+            int Result = (ushort)(A + B); // (the game boy only supports adding or subtracting from the A register)
+            SetZ((byte)Result);
 
             FlagN = false; // not subtracting
 
             SetH(B, 1);
-            SetC(Result);
+            SetC((byte)Result);
             A = (byte)Result;
             return;
 
         }
 
-        public void Adc(ushort B)  // Z0HC, 8-bit add + carry
+        public void Adc(byte B)  // Z0HC, 8-bit add + carry
         {
             // manually carry
 
@@ -513,28 +631,29 @@ namespace GBFX.Core
         }
 
 
-        public void Sub(ushort B)  // Z1HC, 8-bit dec 
+        public void Sub(byte B)  // Z1HC, 8-bit dec 
         {
-            ushort Result = (ushort)(A - B); // (the game boy only supports adding or subtracting from the A register)
-            SetZ(Result);
+            int Result = (ushort)(A - B); // (the game boy only supports adding or subtracting from the A register)
+            SetZ((byte)Result);
 
             FlagN = false; //  subtracting
             SetH_Sub(B, 1);
 
-            SetC(Result);
+            SetC((byte)Result);
             A = (byte)Result;
             return;
 
         }
 
-        public void Sbc(ushort B)  // Z0HC, 8-bit add + carry
+        public void Sbc(byte B)  // Z0HC, 8-bit add + carry
         {
             // manually carry
 
             int Carry = FlagC ? 1 : 0;
 
-            ushort Result = (ushort)(A - B - Carry);
-            SetZ(Result);
+            int Result = A - B - Carry;
+
+            SetZ((byte)Result);
 
             FlagN = true; // not subtracting
 
@@ -547,10 +666,50 @@ namespace GBFX.Core
                 SetH_Sub(B, 1);
             }
 
-            SetC(Result);
+            SetC((byte)Result);
             A = (byte)Result;
             return;
 
+        }
+
+        public void And(byte B) // Z010, 8-bit AND
+        {
+            int Result = (ushort)(A & B);
+            SetZ((byte)Result);
+            FlagC = false;
+            FlagN = false;
+            FlagH = true;
+            A = (byte)Result;
+        }
+
+        public void Or(byte B) // Z000, 8-bit OR
+        {
+            // ^ is XOR operator in c#
+            int Result = (ushort)(A | B);
+
+            SetZ((byte)Result);
+
+            // reset all other flags 
+            FlagC = false;
+            FlagH = false;
+            FlagN = false;
+
+            A = (byte)Result;
+        }
+
+        public void Xor(byte B) // Z000, 8-bit exclusive OR
+        {
+            // ^ is XOR operator in c#
+            int Result = (ushort)(A ^ B);
+
+            SetZ((byte)Result); 
+
+            // reset all other flags 
+            FlagC = false;
+            FlagH = false;
+            FlagN = false;
+
+            A = (byte)Result; 
         }
 
         #endregion
@@ -561,7 +720,7 @@ namespace GBFX.Core
         /// Sets the Zero flag based on the value of the <see cref="byte"/> <paramref name="A"/>.
         /// </summary>
         /// <param name="A"></param>
-        public void SetZ(byte A) => FlagZ = ((byte)A == 0);
+        public void SetZ(byte A) => FlagZ = (A == 0);
 
         /// <summary>
         /// Sets the Zero flag based on the value of the <see cref="ushort"/> <paramref name="A"/>.
