@@ -112,6 +112,9 @@ namespace GBFX.Core
                 case 0x08: // load (a16),sp  20 cycles 
                     Memory.Write(Memory.Read(PC), SP); // set stack pointer to memory at cur address??
                     PC += 2;
+                    break;
+                case 0x09: // add BC     8 cycles    -0HC
+                    Add16(BC); // who the fuck called this instruction DAD?
                     break; 
                 case 0x0A:
                     A = Memory.Read(BC);
@@ -154,6 +157,9 @@ namespace GBFX.Core
                 case 0x18: // dec rr    x3  8 cycles    N/A
                     DE--;
                     break;
+                case 0x19: // add DE     8 cycles    -0HC
+                    Add16(DE);
+                    break;
                 case 0x1A:
                     A = Memory.Read(DE);
                     break;
@@ -186,7 +192,10 @@ namespace GBFX.Core
                 case 0x26:
                     H = Memory.Read(PC);
                     PC++;
-                    break; 
+                    break;
+                case 0x29:
+                    Add16(HL);
+                    break;
                 case 0x2A:
                     A = Memory.Read(HL++);
                     break; 
@@ -224,6 +233,9 @@ namespace GBFX.Core
                 case 0x36:
                     Memory.Write(Memory.Read(PC), HL);
                     PC++;
+                    break;
+                case 0x39:
+                    Add16(SP);
                     break;
                 case 0x3A:
                     A = Memory.Read(HL--);
@@ -880,13 +892,31 @@ namespace GBFX.Core
         }
 
         /// <summary>
-        /// Pushes the program counter to the stack (so that it may be returned to later) and then jumps to <see cref="B"/>.
+        /// Pushes the program counter to the stack (so that it may be returned to later) and then jumps to <see cref="B"/>. ----
         /// </summary>
         /// <param name="B"></param>
         public void Rst(byte B)
         {
             Push(PC);
             PC = B; 
+        }
+
+        /// <summary>
+        /// 16-bit add, -0hc
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        public void Add16(ushort B)
+        {
+            int Result = (int)(HL + B);
+
+            SetH(HL, B);
+
+            FlagN = false;
+
+            FlagC = Result >> 16 != 0; // shift left by 16 bits to check for carry
+
+            HL = (ushort)Result;
         }
         #endregion
 
