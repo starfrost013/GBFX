@@ -610,6 +610,30 @@ namespace GBFX.Core
                 case 0xB7:
                     Or(A); // or a    4 cycles     z000
                     break;
+                case 0xB8:
+                    Cp(B);
+                    break;
+                case 0xB9:
+                    Cp(C);
+                    break;
+                case 0xBA:
+                    Cp(D);
+                    break;
+                case 0xBB:
+                    Cp(E);
+                    break;
+                case 0xBC:
+                    Cp(H);
+                    break;
+                case 0xBD:
+                    Cp(L);
+                    break;
+                case 0xBE:
+                    Cp(Memory.Read(HL));
+                    break;
+                case 0xBF:
+                    Cp(A);
+                    break;
                 case 0xC1: // pop bc   16 cycles   ----
                     BC = Pop();
                     break;
@@ -752,6 +776,24 @@ namespace GBFX.Core
 
         }
 
+        /// <summary>
+        /// 16-bit add, -0hc
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        public void Add16(ushort B)
+        {
+            int Result = (int)(HL + B);
+
+            SetH(HL, B);
+
+            FlagN = false;
+
+            FlagC = Result >> 16 != 0; // shift left by 16 bits to check for carry
+
+            HL = (ushort)Result;
+        }
+
         public void Adc(byte B)  // Z0HC, 8-bit add + carry
         {
             // manually carry
@@ -845,6 +887,23 @@ namespace GBFX.Core
             A = (byte)Result;
         }
 
+        /// <summary>
+        /// Z1HC
+        /// 8-bit compare, basically sub with the result getting thrown away
+        /// </summary>
+        /// <param name="B"></param>
+        public void Cp(byte B)
+        {
+            int Result = (ushort)(A - B); // (the game boy only supports adding or subtracting from the A register)
+            SetZ((byte)Result);
+
+            FlagN = false; //  subtracting
+            SetH_Sub(B, 1);
+
+            SetC((byte)Result);
+            return;
+        }
+
         public void Xor(byte B) // Z000, 8-bit exclusive OR
         {
             // ^ is XOR operator in c#
@@ -901,23 +960,7 @@ namespace GBFX.Core
             PC = B; 
         }
 
-        /// <summary>
-        /// 16-bit add, -0hc
-        /// </summary>
-        /// <param name="A"></param>
-        /// <param name="B"></param>
-        public void Add16(ushort B)
-        {
-            int Result = (int)(HL + B);
 
-            SetH(HL, B);
-
-            FlagN = false;
-
-            FlagC = Result >> 16 != 0; // shift left by 16 bits to check for carry
-
-            HL = (ushort)Result;
-        }
         #endregion
 
         #region Support
