@@ -89,6 +89,10 @@ namespace GBFX.Core
             {
                 case 0x00: // nop (do nothing) 
                     break;
+                case 0x01:
+                    BC = Memory.Read(PC);
+                    PC += 2; // increment by 2 as we are reading 16bit data
+                    break;
                 case 0x02:
                     Memory.Write(BC, A); // POS=bc so no need to read
                     break;
@@ -100,6 +104,10 @@ namespace GBFX.Core
                     break;
                 case 0x05: // dec b    05  4 cycles    z1h-
                     B = Dec(B);
+                    break;
+                case 0x06: // LD b,d8   06  8 cycles    ----
+                    B = Memory.Read(PC);
+                    PC++;
                     break;
                 case 0x08: // load (a16),sp  20 cycles 
                     Memory.Write(Memory.Read(PC), SP); // set stack pointer to memory at cur address??
@@ -117,8 +125,15 @@ namespace GBFX.Core
                 case 0x0D: // dec c    0d  4 cycles    z1h-
                     C = Dec(C);
                     break;
+                case 0x0E:
+                    C = Memory.Read(PC);
+                    break; 
                 case 0x10: // STOP
                     ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", "https://pbs.twimg.com/media/E5jlgW9XIAEKj0t.png:large - not even trying this one");
+                    break;
+                case 0x11:
+                    DE = Memory.Read(DE);
+                    PC += 2;
                     break;
                 case 0x12:
                     Memory.Write(DE, A);
@@ -132,6 +147,10 @@ namespace GBFX.Core
                 case 0x15:
                     D = Dec(D); // dec d    15  4 cycles    z1h-
                     break;
+                case 0x16:
+                    D = Memory.Read(PC);
+                    PC++;
+                    break;
                 case 0x18: // dec rr    x3  8 cycles    N/A
                     DE--;
                     break;
@@ -143,6 +162,14 @@ namespace GBFX.Core
                     break;
                 case 0x1D: // dec e    1D  4 cycles    z1h-
                     E = Dec(E);
+                    break;
+                case 0x1E:
+                    E = Memory.Read(PC);
+                    PC++; 
+                    break;
+                case 0x21:
+                    HL = Memory.Read(PC);
+                    PC += 2; 
                     break;
                 case 0x22:
                     Memory.Write(HL++, A);
@@ -156,6 +183,10 @@ namespace GBFX.Core
                 case 0x25: // dec h    25  4 cycles    z1h-
                     H = Dec(H);
                     break;
+                case 0x26:
+                    H = Memory.Read(PC);
+                    PC++;
+                    break; 
                 case 0x2A:
                     A = Memory.Read(HL++);
                     break; 
@@ -168,6 +199,14 @@ namespace GBFX.Core
                 case 0x2D: // dec l    2D  4 cycles    z1h-
                     L = Dec(L);
                     break;
+                case 0x2E:
+                    L = Memory.Read(PC);
+                    PC++;
+                    break;
+                case 0x31:
+                    SP = Memory.Read(PC);
+                    PC += 2;
+                    break; 
                 case 0x32:
                     Memory.Write(HL--, A);
                     break; 
@@ -182,6 +221,10 @@ namespace GBFX.Core
                     byte AtHL2 = Memory.Read(HL);
                     Memory.Write(HL, AtHL2--);
                     break;
+                case 0x36:
+                    Memory.Write(Memory.Read(PC), HL);
+                    PC++;
+                    break;
                 case 0x3A:
                     A = Memory.Read(HL--);
                     break;
@@ -193,6 +236,10 @@ namespace GBFX.Core
                     break;
                 case 0x3D: // dec (hl)    3D  4 cycles    z0h-
                     L = Dec(L);
+                    break;
+                case 0x3E:
+                    A = Memory.Read(PC);
+                    PC++;
                     break;
                 case 0x40: // useless (ld b,b)    4 cycles   N/A
                     B = B;
@@ -563,8 +610,14 @@ namespace GBFX.Core
                 case 0xC5: // push bc   16 cycles   ----
                     Push(BC);
                     break;
+                case 0xC7: // rst 00h   16 cycles    ----
+                    Rst(0x00);
+                    break;
                 case 0xCA:
                     Jp(FlagZ);
+                    break;
+                case 0xCF: // rst 08h   16 cycles    ----
+                    Rst(0x08);
                     break;
                 case 0xD1: // pop de   16 cycles   ----
                     DE = Pop(); 
@@ -575,8 +628,14 @@ namespace GBFX.Core
                 case 0xD5: // push de   16 cycles   ----
                     Push(DE);
                     break;
+                case 0xD7: // rst 10h   16 cycles    ----
+                    Rst(0x10);
+                    break;
                 case 0xDA:
                     Jp(FlagC);
+                    break;
+                case 0xDF: // rst 18h   16 cycles    ----
+                    Rst(0x18);
                     break; 
                 case 0xE1: // pop hl   16 cycles   ----
                     HL = Pop();
@@ -584,8 +643,14 @@ namespace GBFX.Core
                 case 0xE5: // push hl   16 cycles   ----
                     Push(HL);
                     break;
+                case 0xE7: // rst 20h   16 cycles    ----
+                    Rst(0x20);
+                    break;
                 case 0xE9:
                     PC = HL; 
+                    break;
+                case 0xEF: // rst 28h   16 cycles    ----
+                    Rst(0x28);
                     break;
                 case 0xF1: // pop af   16 cycles   ----
                     AF = Pop();
@@ -593,9 +658,15 @@ namespace GBFX.Core
                 case 0xF5: // push af   16 cycles   ----
                     Push(AF);
                     break;
+                case 0xF7: // rst 30h   16 cycles    ----
+                    Rst(0x30);
+                    break;
                 case 0xF9: // ld sp,hl  4 cycles    ---- (16-bit)
                     SP = HL; 
-                    break; 
+                    break;
+                case 0xFF: // rst 38h   16 cycles    ---- 
+                    Rst(0x38);
+                    break;
                 default: // invalid opcodes - implement glitch opcodes one day?
                     ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", $"Attempted to execute invalid opcode 0x{Opcode.ToString("X2")} at 0x{PC.ToString("X2")}!\nMaybe implement these in the future.");
                     break;
@@ -806,6 +877,16 @@ namespace GBFX.Core
             {
                 PC += 2; 
             }
+        }
+
+        /// <summary>
+        /// Pushes the program counter to the stack (so that it may be returned to later) and then jumps to <see cref="B"/>.
+        /// </summary>
+        /// <param name="B"></param>
+        public void Rst(byte B)
+        {
+            Push(PC);
+            PC = B; 
         }
         #endregion
 
