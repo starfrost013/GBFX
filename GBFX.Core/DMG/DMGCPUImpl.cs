@@ -48,6 +48,16 @@ namespace GBFX.Core
                 Memory.HRAM[i] = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
             }
 
+            #if DEBUG
+            // fill VRAM with garbage for BootROM TEST 
+            for (int i = 0; i < Memory.VRAM.Length; i++)
+            {
+                Memory.VRAM[i] = (byte)Rnd.Next(0x00, 0x100); // 0x100 not included (weird c# quirk)
+
+            }
+
+            #endif
+
             // and finally fill EXTRAM with garbage!
             for (int i = 0; i < Memory.ExtRam.Length; i++)
             {
@@ -652,6 +662,10 @@ namespace GBFX.Core
                 case 0xCA:
                     Jp(FlagZ);
                     break;
+                case 0xCB:
+                    // jump to CB prefix
+                    ExecuteNext_CB(Memory.Read(PC++));
+                    break;
                 case 0xCF: // rst 08h   16 cycles    ----
                     Rst(0x08);
                     break;
@@ -949,6 +963,7 @@ namespace GBFX.Core
                 PC += 2; 
             }
         }
+
 
         /// <summary>
         /// Pushes the program counter to the stack (so that it may be returned to later) and then jumps to <see cref="B"/>. ----

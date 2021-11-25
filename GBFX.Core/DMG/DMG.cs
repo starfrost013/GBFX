@@ -33,7 +33,7 @@ namespace GBFX.Core
 
         public void PowerOn()
         {
-            Logging.Log("Powering on Game Boy...");
+            Logging.Log("Powering on Game Boy...", ClassName);
             PoweredOn = true;
 
             // todo: literally everything 
