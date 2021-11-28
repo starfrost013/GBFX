@@ -701,7 +701,12 @@ namespace GBFX.Core
                     break;
                 case 0xDF: // rst 18h   16 cycles    ----
                     Rst(0x18);
-                    break; 
+                    break;
+                case 0xE0:
+                    byte Amount = Memory.Read(PC);
+                    Memory.Write((ushort)(0xFF00 + Amount), A);
+                    PC++;
+                    break;
                 case 0xE1: // pop hl   16 cycles   ----
                     HL = Pop();
                     break;
@@ -727,6 +732,10 @@ namespace GBFX.Core
                     break; 
                 case 0xEF: // rst 28h   16 cycles    ----
                     Rst(0x28);
+                    break;
+                case 0xF0:
+                    A = Memory.Read((ushort)(0xFF00 + Memory.Read(PC)));
+                    PC++;
                     break;
                 case 0xF1: // pop af   16 cycles   ----
                     AF = Pop();
