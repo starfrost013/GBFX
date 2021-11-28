@@ -100,7 +100,7 @@ namespace GBFX.Core
                 case 0x00: // nop (do nothing) 
                     break;
                 case 0x01:
-                    BC = Memory.Read(PC);
+                    BC = Memory.Read16(PC);
                     PC += 2; // increment by 2 as we are reading 16bit data
                     break;
                 case 0x02:
@@ -120,7 +120,7 @@ namespace GBFX.Core
                     PC++;
                     break;
                 case 0x08: // load (a16),sp  20 cycles 
-                    Memory.Write(Memory.Read(PC), SP); // set stack pointer to memory at cur address??
+                    Memory.Write(Memory.Read16(PC), SP); // set stack pointer to memory at cur address??
                     PC += 2;
                     break;
                 case 0x09: // add BC     8 cycles    -0HC
@@ -145,7 +145,7 @@ namespace GBFX.Core
                     ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", "https://pbs.twimg.com/media/E5jlgW9XIAEKj0t.png:large - not even trying this one");
                     break;
                 case 0x11:
-                    DE = Memory.Read(DE);
+                    DE = Memory.Read16(DE);
                     PC += 2;
                     break;
                 case 0x12:
@@ -235,7 +235,7 @@ namespace GBFX.Core
                     Jr(!FlagC);
                     break;
                 case 0x31:
-                    SP = Memory.Read(PC);
+                    SP = Memory.Read16(PC);
                     PC += 2;
                     break; 
                 case 0x32:
@@ -718,7 +718,7 @@ namespace GBFX.Core
                     PC = HL; 
                     break;
                 case 0xEA:
-                    Memory.Write(Memory.Read(PC), A);
+                    Memory.Write(Memory.Read16(PC), A);
                     PC += 2; 
                     break; 
                 case 0xEF: // rst 28h   16 cycles    ----
@@ -740,7 +740,7 @@ namespace GBFX.Core
                     SP = HL; 
                     break;
                 case 0xFA:
-                    A = Memory.Read(Memory.Read(PC));
+                    A = Memory.Read(Memory.Read16(PC));
                     PC += 2;
                     break; 
                 case 0xFF: // rst 38h   16 cycles    ---- 
@@ -970,7 +970,7 @@ namespace GBFX.Core
 
         public ushort Pop() // Pop address from stack (SP + 2) 
         {
-            ushort Final = Memory.Read(SP);
+            ushort Final = Memory.Read16(SP);
             SP += 2;
 
             return Final; 
@@ -984,7 +984,7 @@ namespace GBFX.Core
         {
             if (JpFlag)
             {
-                PC = Memory.Read(PC);
+                PC = Memory.Read16(PC);
                 //todo: cycle counting
             }
             else

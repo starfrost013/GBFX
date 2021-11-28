@@ -82,6 +82,7 @@ namespace GBFX.Core
         /// </summary>
         private List<Mappable> IORegisters { get; set; }
 
+
         /// <summary>
         /// Reads from RAM.
         /// </summary>
@@ -137,6 +138,21 @@ namespace GBFX.Core
             }
         }
 
+
+        /// <summary>
+        /// Reads a 16-bit word from RAM. (TODO: CPU-AWARE) 
+        /// </summary>
+        /// <param name="Position">The position to read from.</param>
+        /// <returns>A value containing the 16-bit value read from RAM.</returns>
+        public ushort Read16(ushort Position)
+        {
+            byte B1 = Read(Position);
+            byte B2 = Read((ushort)(Position + 1));
+
+            // DMG is little endian 
+            ushort Value = BitConverter.ToUInt16(new byte[2] { B2, B1 });
+            return Value; 
+        }
 
         /// <summary>
         /// Writes to RAM
