@@ -164,14 +164,17 @@ namespace GBFX.Core
                     D = Memory.Read(PC);
                     PC++;
                     break;
-                case 0x18: // dec rr    x3  8 cycles    N/A
-                    DE--;
-                    break;
+                case 0x18:
+                    Jr(true);
+                    break; 
                 case 0x19: // add DE     8 cycles    -0HC
                     Add16(DE);
                     break;
                 case 0x1A:
                     A = Memory.Read(DE);
+                    break;
+                case 0x1B: // dec rr    x3  8 cycles    N/A
+                    DE--;
                     break;
                 case 0x1C: // inc e    1C  4 cycles    z0h-
                     E = Inc(E);
@@ -181,7 +184,10 @@ namespace GBFX.Core
                     break;
                 case 0x1E:
                     E = Memory.Read(PC);
-                    PC++; 
+                    PC++;
+                    break;
+                case 0x20:
+                    Jr(!FlagZ);
                     break;
                 case 0x21:
                     HL = Memory.Read(PC);
@@ -203,6 +209,9 @@ namespace GBFX.Core
                     H = Memory.Read(PC);
                     PC++;
                     break;
+                case 0x28:
+                    Jr(FlagZ);
+                    break; 
                 case 0x29:
                     Add16(HL);
                     break;
@@ -221,6 +230,9 @@ namespace GBFX.Core
                 case 0x2E:
                     L = Memory.Read(PC);
                     PC++;
+                    break;
+                case 0x30:
+                    Jr(!FlagC);
                     break;
                 case 0x31:
                     SP = Memory.Read(PC);
@@ -244,6 +256,9 @@ namespace GBFX.Core
                     Memory.Write(Memory.Read(PC), HL);
                     PC++;
                     break;
+                case 0x38:
+                    Jr(FlagC);
+                    break; 
                 case 0x39:
                     Add16(SP);
                     break;
@@ -948,7 +963,7 @@ namespace GBFX.Core
         }
 
         /// <summary>
-        /// Jumps.
+        /// Jumps to memory address. ----
         /// </summary>
         /// <param name="JpFlag">The condition that must be satisfied in order to jump.</param>
         public void Jp(bool JpFlag)
@@ -964,6 +979,32 @@ namespace GBFX.Core
             }
         }
 
+        /// <summary>
+        /// Relative jumps based on the value immediately after in memory, ----
+        /// </summary>
+        public void Jr(bool Condition)
+        {
+            PC++;
+
+            if (Condition)
+            {
+                sbyte JumpAmount = (sbyte)Memory.Read(PC);
+                
+                // this is a hack but i don't trust the conversions
+
+                if (JumpAmount > 0)
+                {
+                    PC += (byte)JumpAmount;
+                }
+                else
+                {
+                    PC -= (byte)JumpAmount;
+                }
+
+                PC++; // hardware quirk
+                return;
+            }
+        }
 
         /// <summary>
         /// Pushes the program counter to the stack (so that it may be returned to later) and then jumps to <see cref="B"/>. ----
