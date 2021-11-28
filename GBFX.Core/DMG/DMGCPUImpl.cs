@@ -667,7 +667,10 @@ namespace GBFX.Core
                     break;
                 case 0xC3:
                     Jp(true);
-                    break; 
+                    break;
+                case 0xC4:
+                    Call(!FlagZ);
+                    break;
                 case 0xC5: // push bc   16 cycles   ----
                     Push(BC);
                     break;
@@ -681,6 +684,12 @@ namespace GBFX.Core
                     // jump to CB prefix
                     ExecuteNext_CB(Memory.Read(PC++));
                     break;
+                case 0xCC:
+                    Call(FlagZ); 
+                    break;
+                case 0xCD:
+                    Call(true);
+                    break;
                 case 0xCF: // rst 08h   16 cycles    ----
                     Rst(0x08);
                     break;
@@ -690,6 +699,9 @@ namespace GBFX.Core
                 case 0xD2:
                     Jp(!FlagC);
                     break;
+                case 0xD4:
+                    Call(!FlagC);
+                    break; 
                 case 0xD5: // push de   16 cycles   ----
                     Push(DE);
                     break;
@@ -699,6 +711,9 @@ namespace GBFX.Core
                 case 0xDA:
                     Jp(FlagC);
                     break;
+                case 0xDC:
+                    Call(FlagZ);
+                    break; 
                 case 0xDF: // rst 18h   16 cycles    ----
                     Rst(0x18);
                     break;
@@ -1033,6 +1048,19 @@ namespace GBFX.Core
             }
         }
 
+        public void Call(bool Flag)
+        {
+            if (Flag)
+            {
+                Push((ushort)(PC + 2)); // 16BIT SO plus 2
+                PC = Memory.Read16(PC);
+                return;
+            }
+            else
+            {
+                PC += 2; 
+            }
+        }
         /// <summary>
         /// Pushes the program counter to the stack (so that it may be returned to later) and then jumps to <see cref="B"/>. ----
         /// </summary>
