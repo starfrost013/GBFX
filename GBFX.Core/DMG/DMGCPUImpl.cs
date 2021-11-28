@@ -91,9 +91,9 @@ namespace GBFX.Core
             //todo: instructions take multiple cycles
             //so we need to fake this
 
-            byte Opcode = Memory.Read(PC);
+            byte Opcode = Memory.Read(PC++);
 
-            Logging.Log($"Executing opcode 0x{Opcode.ToString("X2")} at {PC.ToString("X2")}", ClassName);
+            Logging.Log($"Executing opcode 0x{Opcode.ToString("X2")} at {(PC - 1).ToString("X2")}", ClassName);
 
             switch (Opcode)
             {
@@ -751,7 +751,6 @@ namespace GBFX.Core
                     break;
             }
 
-            PC++;
 #if DEBUG
             PrintDebugInformation();
 #endif

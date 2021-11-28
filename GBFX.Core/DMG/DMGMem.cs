@@ -150,7 +150,7 @@ namespace GBFX.Core
             byte B2 = Read((ushort)(Position + 1));
 
             // DMG is little endian 
-            ushort Value = BitConverter.ToUInt16(new byte[2] { B2, B1 });
+            ushort Value = BitConverter.ToUInt16(new byte[2] { B1, B2 });
             return Value; 
         }
 
