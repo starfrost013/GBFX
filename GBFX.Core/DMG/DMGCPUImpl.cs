@@ -720,6 +720,10 @@ namespace GBFX.Core
                 case 0xEA:
                     Memory.Write(Memory.Read16(PC), A);
                     PC += 2; 
+                    break;
+                case 0xEE:
+                    Xor(Memory.Read(PC));
+                    PC++;
                     break; 
                 case 0xEF: // rst 28h   16 cycles    ----
                     Rst(0x28);
@@ -742,12 +746,16 @@ namespace GBFX.Core
                 case 0xFA:
                     A = Memory.Read(Memory.Read16(PC));
                     PC += 2;
+                    break;
+                case 0xFE:
+                    Cp(Memory.Read(PC)); // remember increment pc by 1 for instructions using 8bit data 
+                    PC++;
                     break; 
                 case 0xFF: // rst 38h   16 cycles    ---- 
                     Rst(0x38);
                     break;
                 default: // invalid opcodes - implement glitch opcodes one day?
-                    ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", $"Attempted to execute invalid opcode 0x{Opcode.ToString("X2")} at 0x{PC.ToString("X2")}!\nMaybe implement these in the future.");
+                    ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", $"Attempted to execute invalid opcode 0x{Opcode.ToString("X2")} at 0x{(PC - 1).ToString("X2")}!\nMaybe implement these in the future.");
                     break;
             }
 
@@ -1008,6 +1016,11 @@ namespace GBFX.Core
 
                 PC++; // hardware quirk
                 return;
+            }
+            else
+            {
+                PC++; // hardware quirk 
+                return; 
             }
         }
 

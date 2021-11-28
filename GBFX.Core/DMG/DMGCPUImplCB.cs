@@ -209,12 +209,17 @@ namespace GBFX.Core
 
         }
 
+        /// <summary>
+        /// Tests the bit B in register R
+        /// </summary>
+        /// <param name="Value">The bit to test.</param>
+        /// <param name="Reg">The register to test against.</param>
         public void Bit(byte Value, byte Reg) // z01- 
         {
             //todo: flag z
-            FlagZ = (Reg & Value) == 0; 
-            FlagH = false;
-            FlagN = true; 
+            FlagZ = (Reg & (1 << Value)) == 0; // and with mask
+            FlagH = true;
+            FlagN = false; 
         }
     }
 }
