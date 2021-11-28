@@ -190,7 +190,7 @@ namespace GBFX.Core
                     Jr(!FlagZ);
                     break;
                 case 0x21:
-                    HL = Memory.Read(PC);
+                    HL = Memory.Read16(PC);
                     PC += 2; 
                     break;
                 case 0x22:
@@ -997,22 +997,14 @@ namespace GBFX.Core
         /// </summary>
         public void Jr(bool Condition)
         {
-            PC++;
 
             if (Condition)
             {
                 sbyte JumpAmount = (sbyte)Memory.Read(PC);
-                
+
                 // this is a hack but i don't trust the conversions
 
-                if (JumpAmount > 0)
-                {
-                    PC += (byte)JumpAmount;
-                }
-                else
-                {
-                    PC -= (byte)JumpAmount;
-                }
+                PC = (ushort)(PC + JumpAmount);
 
                 PC++; // hardware quirk
                 return;
