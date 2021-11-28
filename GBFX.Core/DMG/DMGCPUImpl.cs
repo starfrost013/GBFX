@@ -144,8 +144,8 @@ namespace GBFX.Core
                 case 0x10: // STOP
                     ErrorManager.ThrowError(ClassName, "InvalidOpcodeException", "https://pbs.twimg.com/media/E5jlgW9XIAEKj0t.png:large - not even trying this one");
                     break;
-                case 0x11:
-                    DE = Memory.Read16(DE);
+                case 0x11: 
+                    DE = Memory.Read16(PC);
                     PC += 2;
                     break;
                 case 0x12:
