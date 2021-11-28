@@ -704,6 +704,9 @@ namespace GBFX.Core
                     break; 
                 case 0xE1: // pop hl   16 cycles   ----
                     HL = Pop();
+                    break;
+                case 0xE2: // LD (C), A     8 cycles    ---
+                    Memory.Write(C, A);
                     break; 
                 case 0xE5: // push hl   16 cycles   ----
                     Push(HL);
@@ -714,12 +717,19 @@ namespace GBFX.Core
                 case 0xE9:
                     PC = HL; 
                     break;
+                case 0xEA:
+                    Memory.Write(Memory.Read(PC), A);
+                    PC += 2; 
+                    break; 
                 case 0xEF: // rst 28h   16 cycles    ----
                     Rst(0x28);
                     break;
                 case 0xF1: // pop af   16 cycles   ----
                     AF = Pop();
                     break;
+                case 0xF2:
+                    A = Memory.Read(C);
+                    break; 
                 case 0xF5: // push af   16 cycles   ----
                     Push(AF);
                     break;
@@ -729,6 +739,10 @@ namespace GBFX.Core
                 case 0xF9: // ld sp,hl  4 cycles    ---- (16-bit)
                     SP = HL; 
                     break;
+                case 0xFA:
+                    A = Memory.Read(Memory.Read(PC));
+                    PC += 2;
+                    break; 
                 case 0xFF: // rst 38h   16 cycles    ---- 
                     Rst(0x38);
                     break;
