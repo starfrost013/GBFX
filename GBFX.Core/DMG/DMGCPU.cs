@@ -25,7 +25,7 @@ namespace GBFX.Core
         /// <summary>
         /// The version of the DMG CPU core.
         /// </summary>
-        public const int DMGCPU_CORE_VERSION = 21;
+        public const int DMGCPU_CORE_VERSION = 22;
 
 
         public static string ClassName => "CPU Core";

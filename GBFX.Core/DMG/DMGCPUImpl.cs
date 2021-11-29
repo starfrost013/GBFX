@@ -164,6 +164,9 @@ namespace GBFX.Core
                     D = Memory.Read(PC);
                     PC++;
                     break;
+                case 0x17: // rla   4 cycles    000c
+                    Rla();
+                    break;
                 case 0x18:
                     Jr(true);
                     break; 
@@ -209,6 +212,9 @@ namespace GBFX.Core
                     H = Memory.Read(PC);
                     PC++;
                     break;
+                case 0x27: // rra   4 cycles    000c
+                    Rra();
+                    break; 
                 case 0x28:
                     Jr(FlagZ);
                     break; 
@@ -659,6 +665,9 @@ namespace GBFX.Core
                 case 0xBF:
                     Cp(A);
                     break;
+                case 0xC0:
+                    Ret(!FlagZ);
+                    break; 
                 case 0xC1: // pop bc   16 cycles   ----
                     BC = Pop();
                     break;
@@ -673,10 +682,16 @@ namespace GBFX.Core
                     break;
                 case 0xC5: // push bc   16 cycles   ----
                     Push(BC);
-                    break;
+                    break; 
                 case 0xC7: // rst 00h   16 cycles    ----
                     Rst(0x00);
                     break;
+                case 0xC8:
+                    Ret(FlagZ);
+                    break; 
+                case 0xC9:
+                    Ret(true);
+                    break; 
                 case 0xCA:
                     Jp(FlagZ);
                     break;
@@ -693,6 +708,9 @@ namespace GBFX.Core
                 case 0xCF: // rst 08h   16 cycles    ----
                     Rst(0x08);
                     break;
+                case 0xD0:
+                    Ret(!FlagC);
+                    break;
                 case 0xD1: // pop de   16 cycles   ----
                     DE = Pop(); 
                     break;
@@ -708,6 +726,9 @@ namespace GBFX.Core
                 case 0xD7: // rst 10h   16 cycles    ----
                     Rst(0x10);
                     break;
+                case 0xD8:
+                    Ret(FlagC);
+                    break; 
                 case 0xDA:
                     Jp(FlagC);
                     break;
@@ -993,6 +1014,32 @@ namespace GBFX.Core
             A = (byte)Result; 
         }
 
+        public void Rla() // 000C, rotate A left
+        {
+            bool PrevC = FlagC; 
+            FlagZ = false;
+            FlagN = false;
+            FlagH = false;
+
+            FlagC = (A & 0x80) != 0;
+            
+            A = (byte)((A << 1) | (PrevC ? 1 : 0)); // shift A by one, using PREVIOUS value of C
+        }
+
+        public void Rra() // 000C, rotate A right
+        {
+            bool PrevC = FlagC;
+            FlagZ = false;
+            FlagN = false;
+            FlagH = false;
+
+            FlagC = (A & 0x80) != 0;
+
+            A = (byte)((A >> 1) | (PrevC ? 1 : 0)); // shift A by one, using PREVIOUS value of C
+
+
+
+        }
         public void Push(ushort B) // Push address from stack (SP - 2)
         {
             SP -= 2;
@@ -1061,6 +1108,15 @@ namespace GBFX.Core
                 PC += 2; 
             }
         }
+
+        public void Ret(bool Flag)
+        {
+            if (Flag)
+            {
+                PC = Pop();
+            }
+        }
+
         /// <summary>
         /// Pushes the program counter to the stack (so that it may be returned to later) and then jumps to <see cref="B"/>. ----
         /// </summary>
@@ -1070,6 +1126,7 @@ namespace GBFX.Core
             Push(PC);
             PC = B; 
         }
+
 
 
         #endregion
