@@ -7,7 +7,7 @@ namespace GBFX.Core
     /// <summary>
     /// Implements the Sharp LR35902
     /// </summary>
-    public partial class DMGCPU
+    public partial class DMGCPU : GBComponent
     {
 
         public DMGCPU()
@@ -25,10 +25,11 @@ namespace GBFX.Core
         /// <summary>
         /// The version of the DMG CPU core.
         /// </summary>
-        public const int DMGCPU_CORE_VERSION = 22;
+        public const int DMGCPU_CORE_VERSION = 23;
 
 
-        public static string ClassName => "CPU Core";
+        public override string ClassName => "CPU Core";
+
         #endregion
 
         #region State

@@ -22,6 +22,8 @@ namespace GBFX.Core
         /// </summary>
         public DMGCPU CPU { get; set; }
 
+        public DMGPPU PPU { get; set; }
+
         public const string ClassName = "DMG"; 
 
         public DMG()
