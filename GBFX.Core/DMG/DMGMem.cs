@@ -111,7 +111,8 @@ namespace GBFX.Core
             {
                 return ExtRam[Position & 0x1FFF];
             }
-            else if (Position > 0xBFFF && Position <= 0xCFFF)
+            else if (Position > 0xBFFF && Position <= 0xCFFF
+            || Position > 0xE000 && Position < 0xFDFF) // EchoRAM
             {
                 return WRAMDMG[Position & 0xFFF];
             }
